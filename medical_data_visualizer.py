@@ -9,10 +9,10 @@ def normalize_data(value):
     elif value > 1: ret = 1
     return ret
 
-# Import data
+# 1
 df = pd.read_csv('/workspace/boilerplate-medical-data-visualizer/medical_examination.csv')
 
-# Add 'overweight' column
+# 2
 df['bmi'] = df['weight'] / (df['height']/100)**2 #create bmi column first for debugging purpose
 df['overweight'] = df['bmi'].apply(lambda x: 1 if x > 25.0 else 0)
 
@@ -21,13 +21,13 @@ normalizer = np.vectorize(normalize_data)
 df['gluc'] = df.apply(lambda v: normalizer(v['gluc']), axis=1)
 df['cholesterol'] = df.apply(lambda v: normalizer(v['cholesterol']), axis=1)
 
-# Draw Categorical Plot
+# 4
 def draw_cat_plot():
-    # Create DataFrame for cat plot using `pd.melt` using just the values from 'cholesterol', 'gluc', 'smoke', 'alco', 'active', and 'overweight'.
+    # 5
     df_cat = df.melt(id_vars=['cardio'],value_vars=['active', 'alco', 'cholesterol', 'gluc', 'overweight', 'smoke'])
 
 
-    # Group and reformat the data to split it by 'cardio'. Show the counts of each feature. You will have to rename one of the columns for the catplot to work correctly.
+    # 6
     df_cat.rename(columns={'value':'total'}, inplace=True)
     #cardio 1, value 1
     df_cat1=df_cat[(df_cat['cardio']==1) & (df_cat['total']==1)].groupby(['variable']).count().reset_index()
@@ -49,25 +49,25 @@ def draw_cat_plot():
     df_cat=pd.concat([df_cat1, df_cat2, df_cat3, df_cat4])
 
 
-    # Draw the catplot with 'sns.catplot()'
+    # 7
     plot = sns.catplot(
     data=df_cat, kind="bar",
     x="variable", y="total", col="cardio", hue='value',
     errorbar="sd", palette="dark", alpha=.6, height=6)
     
 
-    # Get the figure for the output
+    # 8
     fig = plot.figure
 
 
-    # Do not modify the next two lines
+    # 9
     fig.savefig('catplot2.png')
     return fig
 
 
-# Draw Heat Map
+# 10
 def draw_heat_map():
-    # Clean the data
+    # 11
     df_heat = df[(df['height']>=df['height'].quantile(0.025)) & 
                 (df['height']<=df['height'].quantile(0.975)) &
                 (df['weight']>=df['weight'].quantile(0.025)) &
@@ -82,20 +82,20 @@ def draw_heat_map():
     df_heat.reset_index(drop=True)"""
 
 
-    # Calculate the correlation matrix
+    # 12
     corr = df_heat.corr()
 
-    # Generate a mask for the upper triangle
+    # 13
     mask = np.triu(np.ones_like(corr))
 
-    # Set up the matplotlib figure
+    # 14
     fig, ax = plt.subplots()
 
 
-    # Draw the heatmap with 'sns.heatmap()'
+    # 15
     fig=sns.heatmap(corr, mask=mask, annot=True, fmt=".1f")
     #fig=fig.figure
 
-    # Do not modify the next two lines
+    # 16
     fig.figure.savefig('heatmap.png')
     return fig
