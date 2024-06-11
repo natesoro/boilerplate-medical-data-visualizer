@@ -69,9 +69,11 @@ def draw_cat_plot():
 def draw_heat_map():
     # Clean the data
     df_heat = df[(df['height']>=df['height'].quantile(0.025)) & 
-                (df['height']>=df['height'].quantile(0.975)) &
+                (df['height']<=df['height'].quantile(0.975)) &
                 (df['weight']>=df['weight'].quantile(0.025)) &
                 (df['weight']<=df['weight'].quantile(0.975))].reset_index(drop=True)
+    df_heat.rename(columns={'sex':'gender'}, inplace=True)
+    df_heat = df_heat.drop('bmi', axis=1)
 
     """df_heat = df[(df['height']>=df['height'].quantile(0.025))]
     df_heat = df_heat[(df_heat['height']>=df_heat['height'].quantile(0.975))]
